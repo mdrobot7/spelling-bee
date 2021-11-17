@@ -34,6 +34,27 @@ def inDictionary(input): #checks if a particular word is in the dictionary
             return True
     return False
 
+def handleInput(input): #checks the inputted word against spelling bee's rules and the dictionary
+    input = input.lower()
+    
+    if(input[0] == '/'): #commands
+        if(input[1:] == "exit"): raise SystemExit #exit command
+        if(input[1:] == "hint"):
+            time.sleep(0.1) #temporary -- show a hint word
+    if(input == " "):
+        time.sleep(0.1) #shuffle letters when space is pressed
+    
+    if(input.find(letters[0]) == -1):
+        return False
+    else:
+        for i in range(len(input)):
+            if(letters.find(input[i]) == -1): #if the input word contains letters that aren't in the letters string
+                return False
+        else:
+            if(inDictionary(input)):
+                return True #the for loop ran correctly, the input word contains only good letters
+            else: return False
+
 #====================================================================================================================================================================================#
 
 letterFile = open("letters.txt", 'r') #read the letters from the last day played from the file
@@ -55,5 +76,10 @@ if(int(d1[0:2]) > int(lastDate[0:2]) or int(d1[3:5]) > int(lastDate[3:5])): #if 
 letters = letterFile.read()
 letters = letters.split("\n")
 letters = letters[1] #get the line of letters
+letters = letters.replace(" ", "") #get rid of the spaces
+letters = letters.lower()
+
+letterFile.close()
+letterFile = open("letters.txt", 'w')
 
 #====================================================================================================================================================================================#
