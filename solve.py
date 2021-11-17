@@ -1,11 +1,9 @@
 def solve(hint = False): #hint = true if it should print one solution, false to print all
-    try:
-        dict = open("dictionary.txt", 'r')
-        if "p" in args: #if profane is in the args
-            dict = open("dictionary-profane.txt", 'r') #combine the dict and prof files into one large file
-    except FileNotFoundError:
-        print("Dictionary files not found!")
-        raise SystemExit
+    result = [] #words that are part of the anagram
+    c = [0] #a list of counter variables
+    failFlag = False #flag to check if the main algorithm's for loop completed
+    word = ""
+    lastWord = ""
 
     _word = letters
 
@@ -15,8 +13,6 @@ def solve(hint = False): #hint = true if it should print one solution, false to 
     lastWord = [_word] #lastword list
 
     #====================================================================================================================================================================================#
-
-    lines = dict.readlines() #read all lines into a list
 
     #c[0] for the next 2 loops is the line of the dictionary list that the program is on.
 
