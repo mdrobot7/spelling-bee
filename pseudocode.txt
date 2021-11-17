@@ -1,0 +1,20 @@
+TODO:
+modify the solver algorithm to work for spelling bee
+-instead of generating anagrams, make it require the center letter and allow it to not use all letters.
+
+add a current score and words found section to the letters.txt file
+
+
+Pseudocode for main.py:
+
+welcome screen, ask to play or solve
+
+if solve:
+-have the user input each of the letters in this format: A b c d e f g, where the first letter is capitalized and the center letter.
+-run it through the dictionary solver algorithm
+
+if play:
+-check if regenerating letters, if yes, then regen.
+-render the spelling bee screen in ascii art, with the same score system, ranks, words found, etc
+-make the bottom line of the screen the input line, and input words the same way
+-if the word works (run it through the inDictionary function) and it contains the proper letters, add it to letters.txt, calc score, show the word onscreen, etc
