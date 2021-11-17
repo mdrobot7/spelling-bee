@@ -2,14 +2,14 @@
 #Author: Michael Drobot
 #https://github.com/mdrobot7
 
-#Args: -p = profane; -a = all; -r = random order; -o = output results to file
-#Add .txt to the end of the input word to make the output dump to a text file
+#curses guide: https://docs.python.org/3/howto/curses.html#the-python-curses-module
 
 import time
 import sys
 import random
 import string
 import os
+import curses
 from datetime import date
 import solve.py
 
