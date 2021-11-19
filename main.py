@@ -19,14 +19,12 @@ clearConsole = lambda: os.system("cls") #for clearing the terminal screen
 
 
 try:
-    dict = open("dictionary.txt", 'r')
+    dictFile = open("dictionary.txt", 'r')
     if allowProfane: #if profane is in the args
-        dict = open("dictionary-profane.txt", 'r') #combine the dict and prof files into one large file
+        dictFile = open("dictionary-profane.txt", 'r') #combine the dict and prof files into one large file
 except FileNotFoundError:
     print("Dictionary files not found!")
     raise SystemExit
-
-lines = dict.readlines() #read all lines into a list
 
 def inDictionary(input): #checks if a particular word is in the dictionary
     for i in range(len(lines)):
@@ -36,22 +34,22 @@ def inDictionary(input): #checks if a particular word is in the dictionary
 
 def handleInput(input): #checks the inputted word against spelling bee's rules and the dictionary
     input = input.lower()
-    
-    if(input[0] == '/'): #commands
-        if(input[1:] == "exit"): raise SystemExit #exit command
-        if(input[1:] == "hint"):
+
+    if input[0] == '/': #commands
+        if input[1:] == "exit": raise SystemExit #exit command
+        if input[1:] == "hint":
             time.sleep(0.1) #temporary -- show a hint word
-    if(input == " "):
+    if input == " ":
         time.sleep(0.1) #shuffle letters when space is pressed
-    
-    if(input.find(letters[0]) == -1):
+
+    if input.find(letters[0]) == -1 :
         return False
     else:
         for i in range(len(input)):
-            if(letters.find(input[i]) == -1): #if the input word contains letters that aren't in the letters string
+            if letters.find(input[i]) == -1: #if the input word contains letters that aren't in the letters string
                 return False
         else:
-            if(inDictionary(input)):
+            if inDictionary(input) :
                 return True #the for loop ran correctly, the input word contains only good letters
             else: return False
 
@@ -63,7 +61,7 @@ lastDate = letterFile.readline()
 today = date.today()
 d1 = today.strftime("%d/%m/%Y") # dd/mm/YY, put into a string
 
-if(int(d1[0:2]) > int(lastDate[0:2]) or int(d1[3:5]) > int(lastDate[3:5])): #if the dates are greater or the months are greater, regen the letters
+if (int(d1[0:2]) > int(lastDate[0:2])) or (int(d1[3:5]) > int(lastDate[3:5])): #if the dates are greater or the months are greater, regen the letters
     letterFile.close()
     letterFile = open("letters.txt", 'w')
     letterFile.write(d1 + "\n") #write the date to the file
