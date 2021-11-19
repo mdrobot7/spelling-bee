@@ -11,7 +11,7 @@ import string
 import os
 import curses
 from datetime import date
-import solve.py
+import solve
 
 allowProfane = False
 clearConsole = lambda: os.system("cls") #for clearing the terminal screen
@@ -27,8 +27,9 @@ except FileNotFoundError:
     raise SystemExit
 
 def inDictionary(input): #checks if a particular word is in the dictionary
-    for i in range(len(lines)):
-        if input.lower() == lines[i]:
+    dict = dictFile.readlines()
+    for i in range(len(dict)):
+        if input.lower() == dict[i]:
             return True
     return False
 
@@ -81,3 +82,23 @@ letterFile.close()
 letterFile = open("letters.txt", 'w')
 
 #====================================================================================================================================================================================#
+
+stdscr = curses.initscr()
+curses.start_color()
+curses.noecho() #don't type keypresses on the screen
+curses.cbreak() #don't require the enter key to be pressed to parse inputs
+stdscr.keypad(True) #handle special input codes
+
+#curses.LINES = y dimension of the screen
+#curses.COLS = x dimension
+#.refresh updates the screen
+
+
+
+#====================================================================================================================================================================================#
+
+#curses ending stuff
+curses.nocbreak()
+stdscr.keypad(False)
+curses.echo()
+curses.endwin()

@@ -1,7 +1,4 @@
 TODO:
-modify the solver algorithm to work for spelling bee
--instead of generating anagrams, make it require the center letter and allow it to not use all letters.
-
 add a current score and words found section to the letters.txt file
 
 
