@@ -1,6 +1,10 @@
 TODO:
 add a current score and words found section to the letters.txt file
 
+calculate the max score when words are generated, put it in the letters.txt. calculate ranks proportionally, put it in letters.txt
+-this is basically a combination of the solve() function and a score calculator.
+
+make sure the solver/hinter doesn't give a hint that's in the found words list
 
 Pseudocode for main.py:
 
