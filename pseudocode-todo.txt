@@ -1,6 +1,11 @@
 TODO:
 add a current score and words found section to the letters.txt file
 
+make sure there are no repeat letters in the letter letter list
+
+make sure there's at least one vowel per letter set?
+-make sure the max solve score is at least [x] before setting letters?
+
 ----------------------------------------------------------------------------------------------------
 Pseudocode for main.py:
 

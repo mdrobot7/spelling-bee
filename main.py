@@ -11,7 +11,7 @@ import string
 import os
 import curses
 from datetime import date
-import solve
+import solvers
 
 allowProfane = False
 clearConsole = lambda: os.system("cls") #for clearing the terminal screen
@@ -32,6 +32,73 @@ def inDictionary(input): #checks if a particular word is in the dictionary
         if input.lower() == dict[i]:
             return True
     return False
+
+#====================================================================================================================================================================================#
+
+#dict is the array of dictionary lines
+#dictFile is the file object
+#letters is the game letter string (first char is the center letter, NO SPACES!)
+
+def solve(hint):
+    dict = dictFile.readlines() #read all lines into a list
+    count = 0
+
+    while True: #"rough cut" of the dictionary - remove any dict words without the center letter, that are too short, or single letters
+        if count >= len(dict):
+            break
+        dict[count] = dict[count].strip("\n")
+        if len(dict[count]) <= 3: #get rid of less than 4 character words (rules of spelling bee)
+            dict.pop(count)
+            continue
+        if dict[count].find(letters[0]): #get rid of words that don't contain the center letter
+            dict.pop(count)
+            continue
+
+        for i in range(len(dict[count])): #range(length of the current count'th line of the dictionary)
+            if letters.find(dict[count][i]) == -1: #if the i'th letter of the current line isn't in the word, delete the line from the dict and break the loop
+                dict.pop(count)
+                break
+        else: #only increments the index if the for loop runs successfully
+            count += 1
+
+    if hint:
+        while True:
+            try:
+                temp = dict[random.randint(0, len(dict))]
+                foundWords.index(temp)
+            except ValueError: #throws an exception when the value cannot be found in the list by .index(). Means that the dict word is NOT in the found words list
+                return temp
+    else:
+        return dict
+
+
+def maxScore():
+    solutions = solve(False)
+    score = 0
+    for i in range(len(solutions)):
+        if len(solutions[i]) == 4: score += 1
+        for ii in range(len(letters)): #check for pangrams, and score accordingly
+            if solutions[i].find(letters[ii]) == -1: #if the word doesn't contain every letter, it isn't a pangram, so break
+                break
+        else: #if the word is a pangram
+            score += 2*len(solutions[i]) #double score
+            continue
+        if len(solutions[i]) > 4: score += len(solutions[i]) #if it isn't a 4 letter word, add the length of the word to score\
+
+    return score
+
+
+def calculateRanks(): #the scores corresponding to each of the ranks in spelling bee
+    #Order: Beginner, Good Start, Moving Up, Good, Solid, Nice, Great, Amazing, Genius, Queen Bee (all the words)
+    ranks = ""
+    percentages = [0, 2.5, 5, 10, 20, 30, 40, 60, 80]
+    score = maxScore()
+
+    for i in percentages:
+        ranks += str(i*score) + ","
+
+    return ranks
+
 
 def handleInput(input): #checks the inputted word against spelling bee's rules and the dictionary
     input = input.lower()
@@ -66,11 +133,16 @@ d1 = today.strftime("%d/%m/%Y") # dd/mm/YY, put into a string
 
 if (int(d1[0:2]) > int(lastDate[0:2])) or (int(d1[3:5]) > int(lastDate[3:5])): #if the dates are greater or the months are greater, regen the letters and redo setup
     letterFile = open("letters.txt", 'w')
+
     letterFile.write(d1 + "\n") #write the date to the file
-    letterFile.write(random.choice(string.ascii_uppercase) + " ") #write the center letter
+    letters = random.choice(string.ascii_uppercase) #required for the maxScore() and calculateRanks() funcs, this is the easist way of doing it :/
+    letterFile.write(letters + " ") #write the center letter
     for i in range(6):
-        letterFile.write(random.choice(string.ascii_lowercase) + " ") #write the additional 6 letters
-    letterFile.write("\n" + maxScore() + "\n")
+        letters += random.choice(string.ascii_lowercase)
+        letterFile.write(letters[i + 1] + " ") #write the additional 6 letters
+
+    letters = letters.lower()
+    letterFile.write("\n" + str(maxScore()) + "\n")
     letterFile.write(calculateRanks() + "\n")
     letterFile.close()
 
@@ -87,6 +159,7 @@ for i in range(4):
 
 letterFile.close()
 letterFile = open("letters.txt", 'a') #reopen the file so the score and words can be appended to it
+print(solve(False))
 raise SystemExit
 
 #====================================================================================================================================================================================#
