@@ -79,19 +79,21 @@ def solve(hint):
         return dict
 
 
+def score(input): #calculate the score of a word
+    if len(input) == 4: return 1
+    for i in letters: #check for pangrams, and score accordingly
+        if input.find(letters[i]) == -1: #if the word doesn't contain every letter, it isn't a pangram, so break
+            break
+    else: #if the word is a pangram
+        return 2*len(input) #double score
+    if len(solutions[i]) > 4: return len(input) #if it isn't a 4 letter word, add the length of the word to score
+
+
 def maxScore():
     solutions = solve(False)
     score = 0
     for i in range(len(solutions)):
-        if len(solutions[i]) == 4: score += 1
-        for ii in range(len(letters)): #check for pangrams, and score accordingly
-            if solutions[i].find(letters[ii]) == -1: #if the word doesn't contain every letter, it isn't a pangram, so break
-                break
-        else: #if the word is a pangram
-            score += 2*len(solutions[i]) #double score
-            continue
-        if len(solutions[i]) > 4: score += len(solutions[i]) #if it isn't a 4 letter word, add the length of the word to score\
-
+        score(solutions[i])
     return score
 
 
@@ -103,7 +105,6 @@ def calculateRanks(): #the scores corresponding to each of the ranks in spelling
 
     for i in percentages:
         ranks += str((i/100)*score) + ","
-
     return ranks
 
 
@@ -176,6 +177,10 @@ letters = letters.lower()
 foundWords = letterFileList
 for i in range(4):
     foundWords.pop(0) #get rid of the first 4 lines of the list/letters.txt (date, letters, max score, ranks) to get a list of found words
+
+currentScore = 0
+for i in foundWords: #calculate the score at the start of the game
+    score(foundWords[i])
 
 letterFile.close()
 letterFile = open("letters.txt", 'a') #reopen the file so the score and words can be appended to it
