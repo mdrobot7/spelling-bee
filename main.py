@@ -82,29 +82,29 @@ def solve(hint):
 def score(input): #calculate the score of a word
     if len(input) == 4: return 1
     for i in letters: #check for pangrams, and score accordingly
-        if input.find(letters[i]) == -1: #if the word doesn't contain every letter, it isn't a pangram, so break
+        if input.find(i) == -1: #if the word doesn't contain every letter, it isn't a pangram, so break
             break
     else: #if the word is a pangram
         return 2*len(input) #double score
-    if len(solutions[i]) > 4: return len(input) #if it isn't a 4 letter word, add the length of the word to score
+    if len(input) > 4: return len(input) #if it isn't a 4 letter word, add the length of the word to score
 
 
 def maxScore():
     solutions = solve(False)
-    score = 0
+    totalScore = 0
     for i in range(len(solutions)):
-        score(solutions[i])
-    return score
+        totalScore += score(solutions[i])
+    return totalScore
 
 
 def calculateRanks(): #the scores corresponding to each of the ranks in spelling bee
     #Order: Beginner, Good Start, Moving Up, Good, Solid, Nice, Great, Amazing, Genius, Queen Bee (all the words)
     ranks = ""
     percentages = [0, 2.5, 5, 10, 20, 30, 40, 60, 80]
-    score = maxScore()
+    _maxScore = maxScore()
 
     for i in percentages:
-        ranks += str((i/100)*score) + ","
+        ranks += str((i/100)*_maxScore) + ","
     return ranks
 
 
@@ -154,8 +154,7 @@ if (int(d1[0:2]) > int(lastDate[0:2])) or (int(d1[3:5]) > int(lastDate[3:5])): #
         for i in range(len(lettersList)): #convert the list to a string
             letters += lettersList[i]
 
-        max = maxScore()
-        if max > 30: break #wait for a letter combo with a max score over 30
+        if maxScore() > 30: break #wait for a letter combo with a max score over 30
 
 
     letters = letters.capitalize() #make the first letter uppercase
