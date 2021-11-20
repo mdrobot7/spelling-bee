@@ -16,6 +16,7 @@ import solvers
 allowProfane = False
 clearConsole = lambda: os.system("cls") #for clearing the terminal screen
 #clearConsole = lambda: os.system("clear") #for Unix systems
+vowels = "aeiou"
 
 
 try:
@@ -27,6 +28,9 @@ except FileNotFoundError:
     raise SystemExit
 
 def inDictionary(input): #checks if a particular word is in the dictionary
+    dictFile = open("dictionary.txt", 'r')
+    if allowProfane: #if profane is in the args
+        dictFile = open("dictionary-profane.txt", 'r') #combine the dict and prof files into one large file
     dict = dictFile.readlines()
     for i in range(len(dict)):
         if input.lower() == dict[i]:
@@ -40,6 +44,9 @@ def inDictionary(input): #checks if a particular word is in the dictionary
 #letters is the game letter string (first char is the center letter, NO SPACES!)
 
 def solve(hint):
+    dictFile = open("dictionary.txt", 'r')
+    if allowProfane: #if profane is in the args
+        dictFile = open("dictionary-profane.txt", 'r') #combine the dict and prof files into one large file
     dict = dictFile.readlines() #read all lines into a list
     count = 0
 
@@ -50,7 +57,7 @@ def solve(hint):
         if len(dict[count]) <= 3: #get rid of less than 4 character words (rules of spelling bee)
             dict.pop(count)
             continue
-        if dict[count].find(letters[0]): #get rid of words that don't contain the center letter
+        if dict[count].find(letters[0]) == -1: #get rid of words that don't contain the center letter
             dict.pop(count)
             continue
 
@@ -95,7 +102,7 @@ def calculateRanks(): #the scores corresponding to each of the ranks in spelling
     score = maxScore()
 
     for i in percentages:
-        ranks += str(i*score) + ","
+        ranks += str((i/100)*score) + ","
 
     return ranks
 
@@ -135,13 +142,26 @@ if (int(d1[0:2]) > int(lastDate[0:2])) or (int(d1[3:5]) > int(lastDate[3:5])): #
     letterFile = open("letters.txt", 'w')
 
     letterFile.write(d1 + "\n") #write the date to the file
-    letters = random.choice(string.ascii_uppercase) #required for the maxScore() and calculateRanks() funcs, this is the easist way of doing it :/
-    letterFile.write(letters + " ") #write the center letter
-    for i in range(6):
-        letters += random.choice(string.ascii_lowercase)
-        letterFile.write(letters[i + 1] + " ") #write the additional 6 letters
 
-    letters = letters.lower()
+    while True:
+        lettersList = [random.choice(vowels)]
+        for i in range(6):
+            lettersList.append(random.choice(string.ascii_lowercase))
+        random.shuffle(lettersList) #shuffle the letter order to mix the vowel in
+
+        letters = ""
+        for i in range(len(lettersList)): #convert the list to a string
+            letters += lettersList[i]
+
+        max = maxScore()
+        if max > 30: break #wait for a letter combo with a max score over 30
+
+
+    letters = letters.capitalize() #make the first letter uppercase
+    for i in range(len(letters)):
+        letterFile.write(letters[i] + " ")
+    letters = letters.lower() #re-lowercase all of the letters
+
     letterFile.write("\n" + str(maxScore()) + "\n")
     letterFile.write(calculateRanks() + "\n")
     letterFile.close()
@@ -159,7 +179,6 @@ for i in range(4):
 
 letterFile.close()
 letterFile = open("letters.txt", 'a') #reopen the file so the score and words can be appended to it
-print(solve(False))
 raise SystemExit
 
 #====================================================================================================================================================================================#
