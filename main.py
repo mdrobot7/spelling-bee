@@ -18,7 +18,6 @@ clearConsole = lambda: os.system("cls") #for clearing the terminal screen
 #clearConsole = lambda: os.system("clear") #for Unix systems
 vowels = "aeiou"
 
-
 try:
     dictFile = open("dictionary.txt", 'r')
     if allowProfane: #if profane is in the args
@@ -129,6 +128,31 @@ def handleInput(input): #checks the inputted word against spelling bee's rules a
                 return True #the for loop ran correctly, the input word contains only good letters, now check if it's in the dictionary
             else: return False
 
+
+def printLetterGUI(_letters): #returns the ascii art for the letters (like in spelling bee), with the correct letters inserted
+    if(not isinstance(_letters, str)) return 0 #if _letters isn't a string of letters
+
+    first = _letters[0]
+    _letters = _letters[1:] #get the first letter, then remove it (to allow for random distribution in the GUI)
+
+    return """
+               /---\
+              /.....\
+             (.. m ..)
+        /---\ \...../ /---\
+       /.....\ \---/ /.....\
+      (.. m ..)/---\(.. m ..)
+       \.....//.....\\...../
+        \---/(.. m ..)\---/
+        /---\ \...../ /---\
+       /.....\ \---/ /.....\
+      (.. m ..)/---\(.. m ..)
+       \.....//.....\\...../
+        \---/(.. m ..)\---/
+              \...../
+               \---/
+    """
+
 #====================================================================================================================================================================================#
 
 letterFile = open("letters.txt", 'r') #read the letters from the last day played from the file
@@ -183,7 +207,6 @@ for i in foundWords: #calculate the score at the start of the game
 
 letterFile.close()
 letterFile = open("letters.txt", 'a') #reopen the file so the score and words can be appended to it
-raise SystemExit
 
 #====================================================================================================================================================================================#
 
@@ -197,7 +220,12 @@ stdscr.keypad(True) #handle special input codes
 #curses.COLS = x dimension
 #.refresh updates the screen
 
-stdscr.addstr(0, 0, "curses, foiled again")
+stdscr.addstr(0, 0, """
+curses, foiled again
+asdf
+asdf
+-------this is a test
+""")
 stdscr.refresh()
 time.sleep(10)
 

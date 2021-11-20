@@ -1,6 +1,8 @@
 TODO:
 add a current score and words found section to the letters.txt file
 
+UI!
+
 ----------------------------------------------------------------------------------------------------
 Pseudocode for main.py:
 
