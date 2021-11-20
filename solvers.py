@@ -25,9 +25,15 @@ def solve(hint):
             count += 1
 
     if hint:
-        return dict[random.randint(0, len(dict))]
+        while True:
+            try:
+                temp = dict[random.randint(0, len(dict))]
+                foundWords.index(temp)
+            except ValueError: #throws an exception when the value cannot be found in the list by .index(). Means that the dict word is NOT in the found words list
+                return temp
     else:
         return dict
+
 
 def maxScore():
     solutions = solve(False)
@@ -43,6 +49,7 @@ def maxScore():
         if len(solutions[i]) > 4: score += len(solutions[i]) #if it isn't a 4 letter word, add the length of the word to score\
 
     return score
+
 
 def calculateRanks(): #the scores corresponding to each of the ranks in spelling bee
     #Order: Beginner, Good Start, Moving Up, Good, Solid, Nice, Great, Amazing, Genius, Queen Bee (all the words)

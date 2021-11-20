@@ -70,19 +70,23 @@ if (int(d1[0:2]) > int(lastDate[0:2])) or (int(d1[3:5]) > int(lastDate[3:5])): #
     letterFile.write(random.choice(string.ascii_uppercase) + " ") #write the center letter
     for i in range(6):
         letterFile.write(random.choice(string.ascii_lowercase) + " ") #write the additional 6 letters
+    letterFile.write("\n" + maxScore() + "\n")
+    letterFile.write(calculateRanks() + "\n")
     letterFile.close()
 
 letterFile = open("letters.txt", 'r')
-letters = letterFile.read()
-letters = letters.split("\n")
-letters = letters[1] #get the line of letters
+letterFileList = letterFile.readlines()
+
+letters = letterFileList[1]
 letters = letters.replace(" ", "") #get rid of the spaces
 letters = letters.lower()
 
+foundWords = letterFileList
+for i in range(4):
+    foundWords.pop(0) #get rid of the first 4 lines of the list/letters.txt (date, letters, max score, ranks) to get a list of found words
+
 letterFile.close()
 letterFile = open("letters.txt", 'a') #reopen the file so the score and words can be appended to it
-letterFile.write(maxScore() + "\n")
-letterFile.write(calculateRanks() + "\n")
 raise SystemExit
 
 #====================================================================================================================================================================================#
