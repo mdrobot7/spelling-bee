@@ -51,7 +51,7 @@ def handleInput(input): #checks the inputted word against spelling bee's rules a
                 return False
         else:
             if inDictionary(input) :
-                return True #the for loop ran correctly, the input word contains only good letters
+                return True #the for loop ran correctly, the input word contains only good letters, now check if it's in the dictionary
             else: return False
 
 #====================================================================================================================================================================================#
@@ -64,7 +64,7 @@ letterFile.close()
 today = date.today()
 d1 = today.strftime("%d/%m/%Y") # dd/mm/YY, put into a string
 
-if (int(d1[0:2]) > int(lastDate[0:2])) or (int(d1[3:5]) > int(lastDate[3:5])): #if the dates are greater or the months are greater, regen the letters
+if (int(d1[0:2]) > int(lastDate[0:2])) or (int(d1[3:5]) > int(lastDate[3:5])): #if the dates are greater or the months are greater, regen the letters and redo setup
     letterFile = open("letters.txt", 'w')
     letterFile.write(d1 + "\n") #write the date to the file
     letterFile.write(random.choice(string.ascii_uppercase) + " ") #write the center letter
@@ -80,7 +80,9 @@ letters = letters.replace(" ", "") #get rid of the spaces
 letters = letters.lower()
 
 letterFile.close()
-letterFile = open("letters.txt", 'a')
+letterFile = open("letters.txt", 'a') #reopen the file so the score and words can be appended to it
+letterFile.write(maxScore() + "\n")
+letterFile.write(calculateRanks() + "\n")
 raise SystemExit
 
 #====================================================================================================================================================================================#
