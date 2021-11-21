@@ -130,29 +130,35 @@ def handleInput(input): #checks the inputted word against spelling bee's rules a
 
 
 def printLetterGUI(_letters): #returns the ascii art for the letters (like in spelling bee), with the correct letters inserted
-    if(not isinstance(_letters, str)) return 0 #if _letters isn't a string of letters
+    if not isinstance(_letters, str): return 0 #if _letters isn't a string of letters
 
     first = _letters[0]
     _letters = _letters[1:] #get the first letter, then remove it (to allow for random distribution in the GUI)
 
-    return """
-               /---\
-              /.....\
-             (.. m ..)
-        /---\ \...../ /---\
-       /.....\ \---/ /.....\
-      (.. m ..)/---\(.. m ..)
-       \.....//.....\\...../
-        \---/(.. m ..)\---/
-        /---\ \...../ /---\
-       /.....\ \---/ /.....\
-      (.. m ..)/---\(.. m ..)
-       \.....//.....\\...../
-        \---/(.. m ..)\---/
-              \...../
-               \---/
-    """
+    _lettersList = []
+    for i in _letters:
+        _lettersList.append(i)
+    random.shuffle(_lettersList)
 
+    return """
+             /---\\
+            /.....\\
+           (.. m ..)
+      /---\\ \\...../ /---\\
+     /.....\\ \\---/ /.....\\
+    (.. m ..)/---\\(.. m ..)
+     \\.....//.....\\\\...../
+      \\---/(.. m ..)\\---/
+      /---\\ \\...../ /---\\
+     /.....\\ \\---/ /.....\\
+    (.. m ..)/---\\(.. m ..)
+     \\.....//.....\\\\...../
+      \\---/(.. m ..)\\---/
+            \\...../
+             \\---/"""
+
+print(printLetterGUI("asdfasd"))
+raise SystemExit
 #====================================================================================================================================================================================#
 
 letterFile = open("letters.txt", 'r') #read the letters from the last day played from the file

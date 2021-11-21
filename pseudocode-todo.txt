@@ -17,3 +17,35 @@ if play:
 -render the spelling bee screen in ascii art, with the same score system, ranks, words found, etc
 -make the bottom line of the screen the input line, and input words the same way
 -if the word works (run it through the inDictionary function) and it contains the proper letters, add it to letters.txt, calc score, show the word onscreen, etc
+
+         /---\
+        /.....\
+       (.. m ..)
+  /---\ \...../ /---\
+ /.....\ \---/ /.....\
+(.. m ..)/---\(.. m ..)
+ \.....//.....\\...../
+  \---/(.. m ..)\---/
+  /---\ \...../ /---\
+ /.....\ \---/ /.....\
+(.. m ..)/---\(.. m ..)
+ \.....//.....\\...../
+  \---/(.. m ..)\---/
+        \...../
+         \---/
+
+         /---\\
+        /.....\\
+       (.. m ..)
+  /---\\ \\...../ /---\\
+ /.....\\ \\---/ /.....\\
+(.. m ..)/---\\(.. m ..)
+ \\.....//.....\\\\...../
+  \\---/(.. m ..)\\---/
+  /---\\ \\...../ /---\\
+ /.....\\ \\---/ /.....\\
+(.. m ..)/---\\(.. m ..)
+ \\.....//.....\\\\...../
+  \\---/(.. m ..)\\---/
+        \\...../
+         \\---/
