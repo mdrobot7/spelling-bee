@@ -132,33 +132,32 @@ def handleInput(input): #checks the inputted word against spelling bee's rules a
 def printLetterGUI(_letters): #returns the ascii art for the letters (like in spelling bee), with the correct letters inserted
     if not isinstance(_letters, str): return 0 #if _letters isn't a string of letters
 
-    first = _letters[0]
+    center = _letters[0]
     _letters = _letters[1:] #get the first letter, then remove it (to allow for random distribution in the GUI)
 
     _lettersList = []
     for i in _letters:
         _lettersList.append(i)
+    print(_lettersList)
     random.shuffle(_lettersList)
 
     return """
              /---\\
             /.....\\
-           (.. m ..)
+           (.. {} ..)
       /---\\ \\...../ /---\\
      /.....\\ \\---/ /.....\\
-    (.. m ..)/---\\(.. m ..)
+    (.. {} ..)/---\\(.. {} ..)
      \\.....//.....\\\\...../
-      \\---/(.. m ..)\\---/
+      \\---/(.. {} ..)\\---/
       /---\\ \\...../ /---\\
      /.....\\ \\---/ /.....\\
-    (.. m ..)/---\\(.. m ..)
+    (.. {} ..)/---\\(.. {} ..)
      \\.....//.....\\\\...../
-      \\---/(.. m ..)\\---/
+      \\---/(.. {} ..)\\---/
             \\...../
-             \\---/"""
+             \\---/""".format(_lettersList[0], _lettersList[1], _lettersList[2], center, _lettersList[3], _lettersList[4], _lettersList[5])
 
-print(printLetterGUI("asdfasd"))
-raise SystemExit
 #====================================================================================================================================================================================#
 
 letterFile = open("letters.txt", 'r') #read the letters from the last day played from the file
@@ -201,6 +200,7 @@ letterFileList = letterFile.readlines()
 
 letters = letterFileList[1]
 letters = letters.replace(" ", "") #get rid of the spaces
+letters = letters.strip()
 letters = letters.lower()
 
 foundWords = letterFileList
@@ -214,6 +214,8 @@ for i in foundWords: #calculate the score at the start of the game
 letterFile.close()
 letterFile = open("letters.txt", 'a') #reopen the file so the score and words can be appended to it
 
+print(letters)
+print(printLetterGUI(letters))
 #====================================================================================================================================================================================#
 
 stdscr = curses.initscr()
@@ -226,12 +228,7 @@ stdscr.keypad(True) #handle special input codes
 #curses.COLS = x dimension
 #.refresh updates the screen
 
-stdscr.addstr(0, 0, """
-curses, foiled again
-asdf
-asdf
--------this is a test
-""")
+stdscr.addstr(0, 0, printLetterGUI(letters))
 stdscr.refresh()
 time.sleep(10)
 
