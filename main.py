@@ -129,7 +129,7 @@ def handleInput(input): #checks the inputted word against spelling bee's rules a
             else: return False
 
 
-def printLetterGUI(_letters): #returns the ascii art for the letters (like in spelling bee), with the correct letters inserted
+def printLettersGUI(_letters): #returns the ascii art for the letters (like in spelling bee), with the correct letters inserted
     if not isinstance(_letters, str): return 0 #if _letters isn't a string of letters
 
     center = _letters[0]
@@ -138,7 +138,6 @@ def printLetterGUI(_letters): #returns the ascii art for the letters (like in sp
     _lettersList = []
     for i in _letters:
         _lettersList.append(i)
-    print(_lettersList)
     random.shuffle(_lettersList)
 
     return """
@@ -214,8 +213,6 @@ for i in foundWords: #calculate the score at the start of the game
 letterFile.close()
 letterFile = open("letters.txt", 'a') #reopen the file so the score and words can be appended to it
 
-print(letters)
-print(printLetterGUI(letters))
 #====================================================================================================================================================================================#
 
 stdscr = curses.initscr()
@@ -227,8 +224,18 @@ stdscr.keypad(True) #handle special input codes
 #curses.LINES = y dimension of the screen
 #curses.COLS = x dimension
 #.refresh updates the screen
+#everything is y, x!!!!!
 
-stdscr.addstr(0, 0, printLetterGUI(letters))
+lettersGUIPad = curses.newpad(31, 16) #a part of the screen for the letters GUI
+lettersGUIPad.addstr(0, 0, printLettersGUI(letters))
+print("asdf")
+
+# (0,0) : coordinate of upper-left corner of pad area to display.
+# (5,5) : coordinate of upper-left corner of window area to be filled with pad content.
+# (20, 75) : coordinate of lower-right corner of window area to be filled with pad content.
+lettersGUIPad.refresh(0, 0, 2, 2, 33, 18)
+
+stdscr.addstr(0, 0, printLettersGUI(letters))
 stdscr.refresh()
 time.sleep(10)
 
