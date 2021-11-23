@@ -17,6 +17,7 @@ allowProfane = False
 clearConsole = lambda: os.system("cls") #for clearing the terminal screen
 #clearConsole = lambda: os.system("clear") #for Unix systems
 vowels = "aeiou"
+ranks = ["Beginner", "Good Start", "Moving Up", "Good", "Solid", "Nice", "Great", "Amazing", "Genius", "Queen Bee"]
 
 try:
     dictFile = open("dictionary.txt", 'r')
@@ -99,13 +100,21 @@ def maxScore():
 
 def calculateRanks(): #the scores corresponding to each of the ranks in spelling bee
     #Order: Beginner, Good Start, Moving Up, Good, Solid, Nice, Great, Amazing, Genius, Queen Bee (all the words)
-    ranks = ""
-    percentages = [0, 2.5, 5, 10, 20, 30, 40, 60, 80]
+    _ranks = ""
+    percentages = [0, 2.5, 5, 10, 20, 30, 40, 60, 80, 100]
     _maxScore = maxScore()
 
     for i in percentages:
-        ranks += str((i/100)*_maxScore) + ","
-    return ranks
+        _ranks += str(int((i/100)*_maxScore)) + "," #make sure these are ints
+    _ranks = _ranks[:-1] #should get everything but the last character, TEST THIS
+    return _ranks
+
+
+def currentRank(_score, _rankValsList):
+    for i in range(len(_rankValsList)):
+        if _score < _rankValsList[i]: #run the for loop until it reaches a rank that is greater than the current score
+            return i - 1
+    return 0
 
 
 def handleInput(input): #checks the inputted word against spelling bee's rules and the dictionary
@@ -169,6 +178,7 @@ today = date.today()
 d1 = today.strftime("%d/%m/%Y") # dd/mm/YY, put into a string
 
 if (int(d1[0:2]) > int(lastDate[0:2])) or (int(d1[3:5]) > int(lastDate[3:5])): #if the dates are greater or the months are greater, regen the letters and redo setup
+    print("Generating letters...")
     letterFile = open("letters.txt", 'w')
 
     letterFile.write(d1 + "\n") #write the date to the file
@@ -191,8 +201,7 @@ if (int(d1[0:2]) > int(lastDate[0:2])) or (int(d1[3:5]) > int(lastDate[3:5])): #
         letterFile.write(letters[i] + " ")
     letters = letters.lower() #re-lowercase all of the letters
 
-    letterFile.write("\n" + str(maxScore()) + "\n")
-    letterFile.write(calculateRanks() + "\n")
+    letterFile.write("\n" + calculateRanks() + "\n")
     letterFile.close()
 
 letterFile = open("letters.txt", 'r')
@@ -203,8 +212,12 @@ letters = letters.replace(" ", "") #get rid of the spaces
 letters = letters.strip()
 letters = letters.lower()
 
+rankVals = letterFileList[2].split(",")
+for i in range(len(rankVals)):
+    rankVals[i] = int(rankVals[i])
+
 foundWords = letterFileList
-for i in range(4):
+for i in range(3):
     foundWords.pop(0) #get rid of the first 4 lines of the list/letters.txt (date, letters, max score, ranks) to get a list of found words
 for i in range(len(foundWords)):
     foundWords[i] = foundWords[i].strip() #get rid of the newline chars
@@ -242,14 +255,25 @@ except:
     print("\nMake your terminal window bigger, and restart the program.\n") #curses freaks out because the terminal window is too small for the desired pad dimension
     raise SystemExit
 
-time.sleep(5)
-foundWordsPad = curses.newpad(200, 200)
-counter = 1
+foundWordsPad = curses.newpad(100, 100)
+counter = 0
 for i in range(len(foundWords)):
-    foundWordsPad.addstr(i, (counter - 1)*20, foundWords[i]) #make columns of 15 found words
     if i % 15 == 0:
         counter += 1
-foundWordsPad.refresh(0, 0, 2, 35, 30, 70)
+    foundWordsPad.addstr(i, (counter - 1)*20, foundWords[i]) #make columns of 15 found words
+foundWordsPad.refresh(0, 0, 5, 35, 30, 70)
+
+currentScorePad = curses.newpad(1, 100)
+currentScorePad.addstr(0, 0, "Current Score: " + str(currentScore))
+currentScorePad.refresh(0, 0, 3, 35, 3, 70)
+
+currentRankPad = curses.newpad(1, 100)
+currentRankPad.addstr(0, 0, "Current Rank: " + ranks[currentRank(currentScore, rankVals)])
+currentRankPad.refresh(0, 0, 4, 35, 4, 70)
+
+#ranksPad = curses.newpad(100, 100)
+#ranksPad.addstr(0, 0, )
+
 time.sleep(5)
 
 #====================================================================================================================================================================================#
