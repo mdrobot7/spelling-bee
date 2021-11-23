@@ -86,6 +86,7 @@ def score(input): #calculate the score of a word
     else: #if the word is a pangram
         return 2*len(input) #double score
     if len(input) > 4: return len(input) #if it isn't a 4 letter word, add the length of the word to score
+    return 0 #required to give the function a return type (*sigh*...python)
 
 
 def maxScore():
@@ -205,10 +206,12 @@ letters = letters.lower()
 foundWords = letterFileList
 for i in range(4):
     foundWords.pop(0) #get rid of the first 4 lines of the list/letters.txt (date, letters, max score, ranks) to get a list of found words
+for i in range(len(foundWords)):
+    foundWords[i] = foundWords[i].strip() #get rid of the newline chars
 
 currentScore = 0
 for i in foundWords: #calculate the score at the start of the game
-    score(foundWords[i])
+    currentScore += score(i)
 
 letterFile.close()
 letterFile = open("letters.txt", 'a') #reopen the file so the score and words can be appended to it
@@ -226,18 +229,28 @@ stdscr.keypad(True) #handle special input codes
 #.refresh updates the screen
 #everything is y, x!!!!!
 
-lettersGUIPad = curses.newpad(31, 16) #a part of the screen for the letters GUI
-lettersGUIPad.addstr(0, 0, printLettersGUI(letters))
+lettersGUIPad = curses.newpad(100, 100) #a part of the screen for the letters GUI
 print("asdf")
+lettersGUIPad.addstr(0, 0, printLettersGUI(letters))
 
 # (0,0) : coordinate of upper-left corner of pad area to display.
-# (5,5) : coordinate of upper-left corner of window area to be filled with pad content.
-# (20, 75) : coordinate of lower-right corner of window area to be filled with pad content.
-lettersGUIPad.refresh(0, 0, 2, 2, 33, 18)
+# (2,2) : coordinate of upper-left corner of window area to be filled with pad content.
+# (17, 30) : coordinate of lower-right corner of window area to be filled with pad content.
+try:
+    lettersGUIPad.refresh(0, 0, 2, 2, 30, 100) #0, 0, 2, 2, 17, 30
+except:
+    print("\nMake your terminal window bigger, and restart the program.\n") #curses freaks out because the terminal window is too small for the desired pad dimension
+    raise SystemExit
 
-stdscr.addstr(0, 0, printLettersGUI(letters))
-stdscr.refresh()
-time.sleep(10)
+time.sleep(5)
+foundWordsPad = curses.newpad(200, 200)
+counter = 1
+for i in range(len(foundWords)):
+    foundWordsPad.addstr(i, (counter - 1)*20, foundWords[i]) #make columns of 15 found words
+    if i % 15 == 0:
+        counter += 1
+foundWordsPad.refresh(0, 0, 2, 35, 30, 70)
+time.sleep(5)
 
 #====================================================================================================================================================================================#
 
