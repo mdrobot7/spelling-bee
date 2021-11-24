@@ -1,9 +1,5 @@
 TODO:
-add a check for 'q' in the letters: if there is a q, there has to be a u.
 
-add a check in letters for duplicate letters (NO duplicates, it's pointless since you can re-use letters)
-
-UI!
 
 ----------------------------------------------------------------------------------------------------
 Pseudocode for main.py:

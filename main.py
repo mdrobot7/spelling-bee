@@ -14,8 +14,9 @@ from datetime import date
 import solvers
 
 allowProfane = False
-clearConsole = lambda: os.system("cls") #for clearing the terminal screen
+#clearConsole = lambda: os.system("cls") #for clearing the terminal screen
 #clearConsole = lambda: os.system("clear") #for Unix systems
+
 vowels = "aeiou"
 ranks = ["Beginner", "Good Start", "Moving Up", "Good", "Solid", "Nice", "Great", "Amazing", "Genius", "Queen Bee"]
 solutions = []
@@ -27,12 +28,6 @@ try:
 except FileNotFoundError:
     print("Dictionary files not found!")
     raise SystemExit
-
-def inDictionary(_input, _dict): #checks if a particular word is in the dictionary list (_dict is the SOLUTIONS LIST!)
-    for i in range(len(_dict)):
-        if _input.lower() == _dict[i]:
-            return True
-    return False
 
 #====================================================================================================================================================================================#
 
@@ -159,16 +154,33 @@ if (int(d1[0:2]) > int(lastDate[0:2])) or (int(d1[3:5]) > int(lastDate[3:5])): #
     letterFile.write(d1 + "\n") #write the date to the file
 
     while True:
-        lettersList = [random.choice(vowels)]
-        for i in range(6):
-            lettersList.append(random.choice(string.ascii_lowercase))
-        random.shuffle(lettersList) #shuffle the letter order to mix the vowel in
+        lettersList = [random.choice(vowels)] #make sure there's at least one vowel
+        while len(lettersList) != 7:
+            nextLetter = random.choice(string.ascii_lowercase)
+            for i in range(len(lettersList)):
+                if nextLetter == lettersList[i]: #check for duplicate letters (if duplicate found, break the for loop and throw away the letter choice)
+                    break
+            else: #if no duplicates found
+                lettersList.append(nextLetter)
 
-        letters = ""
-        for i in range(len(lettersList)): #convert the list to a string
-            letters += lettersList[i]
+        for i in range(len(lettersList)):
+            if lettersList[i] == 'q':
+                for ii in range(len(lettersList)):
+                    if lettersList[ii] == 'u':
+                        break
+                else: #if no u's are found, but q's are:
+                    lettersList[random.randint(0, 8)] = 'u'
+                break #get out of the q-checking for loop
 
-        if maxScore() > 30: break #wait for a letter combo with a max score over 30
+        for i in range(3): #randomize the letters 3 times, check each combo each time. this might save some processing time.
+            random.shuffle(lettersList) #shuffle the letter order to mix the vowel in
+
+            letters = ""
+            for i in range(len(lettersList)): #convert the list to a string
+                letters += lettersList[i]
+
+            if maxScore() > 30: break #wait for a letter combo with a max score over 30
+        if maxScore() > 30: break #break out of the while True loop (optimize, if needed)
 
 
     letters = letters.capitalize() #make the first letter uppercase
