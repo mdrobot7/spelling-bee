@@ -18,6 +18,7 @@ clearConsole = lambda: os.system("cls") #for clearing the terminal screen
 #clearConsole = lambda: os.system("clear") #for Unix systems
 vowels = "aeiou"
 ranks = ["Beginner", "Good Start", "Moving Up", "Good", "Solid", "Nice", "Great", "Amazing", "Genius", "Queen Bee"]
+solutions = []
 
 try:
     dictFile = open("dictionary.txt", 'r')
@@ -27,13 +28,9 @@ except FileNotFoundError:
     print("Dictionary files not found!")
     raise SystemExit
 
-def inDictionary(input): #checks if a particular word is in the dictionary
-    dictFile = open("dictionary.txt", 'r')
-    if allowProfane: #if profane is in the args
-        dictFile = open("dictionary-profane.txt", 'r') #combine the dict and prof files into one large file
-    dict = dictFile.readlines()
-    for i in range(len(dict)):
-        if input.lower() == dict[i]:
+def inDictionary(_input, _dict): #checks if a particular word is in the dictionary list (_dict is the SOLUTIONS LIST!)
+    for i in range(len(_dict)):
+        if _input.lower() == _dict[i]:
             return True
     return False
 
@@ -79,22 +76,22 @@ def solve(hint):
         return dict
 
 
-def score(input): #calculate the score of a word
-    if len(input) == 4: return 1
+def score(_input): #calculate the score of a word
+    if len(_input) == 4: return 1
     for i in letters: #check for pangrams, and score accordingly
-        if input.find(i) == -1: #if the word doesn't contain every letter, it isn't a pangram, so break
+        if _input.find(i) == -1: #if the word doesn't contain every letter, it isn't a pangram, so break
             break
     else: #if the word is a pangram
-        return 2*len(input) #double score
-    if len(input) > 4: return len(input) #if it isn't a 4 letter word, add the length of the word to score
+        return 2*len(_input) #double score
+    if len(_input) > 4: return len(_input) #if it isn't a 4 letter word, add the length of the word to score
     return 0 #required to give the function a return type (*sigh*...python)
 
 
 def maxScore():
-    solutions = solve(False)
+    _solutions = solve(False)
     totalScore = 0
-    for i in range(len(solutions)):
-        totalScore += score(solutions[i])
+    for i in range(len(_solutions)):
+        totalScore += score(_solutions[i])
     return totalScore
 
 
@@ -110,7 +107,7 @@ def calculateRanks(): #the scores corresponding to each of the ranks in spelling
     return _ranks
 
 
-def currentRank(_score, _rankValsList):
+def currentRank(_score, _rankValsList): #returns a value 0-9, corresponding to an index in the ranks list
     for i in range(len(_rankValsList)):
         if _score < _rankValsList[i]: #run the for loop until it reaches a rank that is greater than the current score
             return i - 1
@@ -139,7 +136,7 @@ def handleInput(input): #checks the inputted word against spelling bee's rules a
             else: return False
 
 
-def printLettersGUI(_letters): #returns the ascii art for the letters (like in spelling bee), with the correct letters inserted
+def printLettersGUI(_letters): #returns the ascii art for the letters (like in spelling bee), with the correct letters inserted AND SHUFFLED
     if not isinstance(_letters, str): return 0 #if _letters isn't a string of letters
 
     center = _letters[0]
@@ -226,6 +223,8 @@ currentScore = 0
 for i in foundWords: #calculate the score at the start of the game
     currentScore += score(i)
 
+solutions = solve(False)
+
 letterFile.close()
 letterFile = open("letters.txt", 'a') #reopen the file so the score and words can be appended to it
 
@@ -233,7 +232,7 @@ letterFile = open("letters.txt", 'a') #reopen the file so the score and words ca
 
 stdscr = curses.initscr()
 curses.start_color()
-curses.noecho() #don't type keypresses on the screen
+curses.echo() #type keypresses on the screen
 curses.cbreak() #don't require the enter key to be pressed to parse inputs
 stdscr.keypad(True) #handle special input codes
 
@@ -242,15 +241,17 @@ stdscr.keypad(True) #handle special input codes
 #.refresh updates the screen
 #everything is y, x!!!!!
 
+stdscr.addstr(20, 0, "Input: ")
+stdscr.refresh()
+
 lettersGUIPad = curses.newpad(100, 100) #a part of the screen for the letters GUI
-print("asdf")
 lettersGUIPad.addstr(0, 0, printLettersGUI(letters))
 
 # (0,0) : coordinate of upper-left corner of pad area to display.
 # (2,2) : coordinate of upper-left corner of window area to be filled with pad content.
 # (17, 30) : coordinate of lower-right corner of window area to be filled with pad content.
 try:
-    lettersGUIPad.refresh(0, 0, 2, 2, 30, 100) #0, 0, 2, 2, 17, 30
+    lettersGUIPad.refresh(0, 0, 2, 2, 17, 30) #0, 0, 2, 2, 17, 30
 except:
     print("\nMake your terminal window bigger, and restart the program.\n") #curses freaks out because the terminal window is too small for the desired pad dimension
     raise SystemExit
@@ -271,10 +272,25 @@ currentRankPad = curses.newpad(1, 100)
 currentRankPad.addstr(0, 0, "Current Rank: " + ranks[currentRank(currentScore, rankVals)])
 currentRankPad.refresh(0, 0, 4, 35, 4, 70)
 
-#ranksPad = curses.newpad(100, 100)
-#ranksPad.addstr(0, 0, )
+ranksPad = curses.newpad(100, 100)
+for i in range(len(ranks)):
+    ranksPad.addstr(i, 0, ranks[i] + ": " + str(rankVals[i]))
+ranksPad.refresh(0, 0, 3, 80, 15, 100)
 
-time.sleep(5)
+while True:
+    input = str(stdscr.getstr(20, 7)) #returns bytes, needs to be converted/casted to string.
+    input = input[2:-1] #remove extraneous characters
+    for i in range(len(input)):
+        stdscr.addstr(20, 7 + i, " ") #clear out the past input (stdscr.clrtoeol() and .clrtobot() didn't work for some reason...)
+    stdscr.refresh()
+
+    if input == "/exit": break
+    if input == " " or input == "/shuffle":
+        lettersGUIPad.addstr(0, 0, printLettersGUI(letters)) #regenerate the letters GUI with shuffled letters
+        lettersGUIPad.refresh(0, 0, 2, 2, 17, 30)
+        continue
+    pass
+
 
 #====================================================================================================================================================================================#
 
