@@ -114,28 +114,6 @@ def currentRank(_score, _rankValsList): #returns a value 0-9, corresponding to a
     return 0
 
 
-def handleInput(input): #checks the inputted word against spelling bee's rules and the dictionary
-    input = input.lower()
-
-    if input[0] == '/': #commands
-        if input[1:] == "exit": raise SystemExit #exit command
-        if input[1:] == "hint":
-            time.sleep(0.1) #temporary -- show a hint word
-    if input == " ":
-        time.sleep(0.1) #shuffle letters when space is pressed
-
-    if input.find(letters[0]) == -1 :
-        return False
-    else:
-        for i in range(len(input)):
-            if letters.find(input[i]) == -1: #if the input word contains letters that aren't in the letters string
-                return False
-        else:
-            if inDictionary(input) :
-                return True #the for loop ran correctly, the input word contains only good letters, now check if it's in the dictionary
-            else: return False
-
-
 def printLettersGUI(_letters): #returns the ascii art for the letters (like in spelling bee), with the correct letters inserted AND SHUFFLED
     if not isinstance(_letters, str): return 0 #if _letters isn't a string of letters
 
@@ -223,7 +201,7 @@ currentScore = 0
 for i in foundWords: #calculate the score at the start of the game
     currentScore += score(i)
 
-solutions = solve(False)
+solutions = solve(False) #fill the solutions list with all of the possible solution words
 
 letterFile.close()
 letterFile = open("letters.txt", 'a') #reopen the file so the score and words can be appended to it
@@ -241,7 +219,7 @@ stdscr.keypad(True) #handle special input codes
 #.refresh updates the screen
 #everything is y, x!!!!!
 
-stdscr.addstr(20, 0, "Input: ")
+stdscr.addstr(20, 0, "Input: ") #print this BEFORE EVERYTHING ELSE otherwise it breaks stuff
 stdscr.refresh()
 
 lettersGUIPad = curses.newpad(100, 100) #a part of the screen for the letters GUI
@@ -262,7 +240,11 @@ for i in range(len(foundWords)):
     if i % 15 == 0:
         counter += 1
     foundWordsPad.addstr(i, (counter - 1)*20, foundWords[i]) #make columns of 15 found words
-foundWordsPad.refresh(0, 0, 5, 35, 30, 70)
+try:
+    foundWordsPad.refresh(0, 0, 6, 35, 30, 70)
+except:
+    print("\nMake your terminal window bigger, and restart the program.\n") #curses freaks out because the terminal window is too small for the desired pad dimension
+    raise SystemExit
 
 currentScorePad = curses.newpad(1, 100)
 currentScorePad.addstr(0, 0, "Current Score: " + str(currentScore))
@@ -280,6 +262,7 @@ ranksPad.refresh(0, 0, 3, 80, 15, 100)
 while True:
     input = str(stdscr.getstr(20, 7)) #returns bytes, needs to be converted/casted to string.
     input = input[2:-1] #remove extraneous characters
+    input = input.lower()
     for i in range(len(input)):
         stdscr.addstr(20, 7 + i, " ") #clear out the past input (stdscr.clrtoeol() and .clrtobot() didn't work for some reason...)
     stdscr.refresh()
@@ -289,8 +272,35 @@ while True:
         lettersGUIPad.addstr(0, 0, printLettersGUI(letters)) #regenerate the letters GUI with shuffled letters
         lettersGUIPad.refresh(0, 0, 2, 2, 17, 30)
         continue
-    pass
 
+    for i in solutions:
+        if i == input: #if the input matches a word in the solutions list, return true
+            for ii in foundWords:
+                if ii == input: break #if the input matches a solution, make sure it hasn't already been found
+            else: #if it wasn't already found (aka is a good input word)
+                currentScore += score(input)
+
+                foundWords.append(input)
+                counter = 0
+                for i in range(len(foundWords)):
+                    if i % 15 == 0:
+                        counter += 1
+                    foundWordsPad.addstr(i, (counter - 1)*20, foundWords[i]) #make columns of 15 found words
+                foundWordsPad.refresh(0, 0, 6, 35, 30, 70)
+
+                currentScorePad.addstr(0, 0, "Current Score: " + str(currentScore))
+                currentScorePad.refresh(0, 0, 3, 35, 3, 70)
+
+                currentRankPad.addstr(0, 0, "Current Rank: ")
+                for i in range(len(ranks[currentRank(currentScore - score(input), rankVals)])): #clear out the old rank from the line (.clrtoeol doesn't work for some reason)
+                    currentRankPad.addstr(" ")
+                currentRankPad.refresh(0, 0, 4, 35, 4, 70)
+                currentRankPad.addstr(0, 0, "Current Rank: " + ranks[currentRank(currentScore, rankVals)]) #put the new rank in
+                currentRankPad.refresh(0, 0, 4, 35, 4, 70)
+
+                letterFile.close()
+                letterFile = open("letters.txt", 'a') #reopen the file so the score and words can be appended to it
+                letterFile.write(input + "\n")
 
 #====================================================================================================================================================================================#
 
