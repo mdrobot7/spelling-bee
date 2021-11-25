@@ -1,5 +1,7 @@
 TODO:
+-/solve and /hint for a full solve and a single hint
 
+-/solve [arg] or py main.py -s [arg]  (or -h for hint) for solving the official NYT one instead of playing the game
 
 ----------------------------------------------------------------------------------------------------
 Pseudocode for main.py:
