@@ -35,7 +35,7 @@ except FileNotFoundError:
 #dictFile is the file object
 #letters is the game letter string (first char is the center letter, NO SPACES!)
 
-def solve(hint):
+def solve(): #returns a list of all solution words
     dictFile = open("dictionary.txt", 'r')
     if allowProfane: #if profane is in the args
         dictFile = open("dictionary-profane.txt", 'r') #combine the dict and prof files into one large file
@@ -53,22 +53,26 @@ def solve(hint):
             dict.pop(count)
             continue
 
-        for i in range(len(dict[count])): #range(length of the current count'th line of the dictionary)
-            if letters.find(dict[count][i]) == -1: #if the i'th letter of the current line isn't in the word, delete the line from the dict and break the loop
-                dict.pop(count)
-                break
-        else: #only increments the index if the for loop runs successfully
-            count += 1
+        try: #check if the current word is in the solved list
+            foundWords.index(solutions[random.randint(0, len(solutions))])
+        except ValueError: #throws an exception when the value cannot be found in the list by .index(). Means that the dict word is NOT in the found list (SUCCESS)
+            for i in range(len(dict[count])): #range(length of the current count'th line of the dictionary)
+                if letters.find(dict[count][i]) == -1: #if the i'th letter of the current line isn't in the word, delete the line from the dict and break the loop
+                    dict.pop(count)
+                    break
+            else: #only increments the index if the for loop runs successfully
+                count += 1
+        else:
+            dict.pop(count) #if NO EXCEPTION (the word was already found), REMOVE IT (aka FAIL)
+    return dict
 
-    if hint:
-        while True:
-            try:
-                temp = dict[random.randint(0, len(dict))]
-                foundWords.index(temp)
-            except ValueError: #throws an exception when the value cannot be found in the list by .index(). Means that the dict word is NOT in the found words list
-                return temp
-    else:
-        return dict
+
+def hint(): #get one random solution word that ISN'T in the solved words list
+    while True:
+        try:
+            foundWords.index(solutions[random.randint(0, len(solutions))])
+        except ValueError: #throws an exception when the value cannot be found in the list by .index(). Means that the dict word is NOT in the found words list
+            return temp
 
 
 def score(_input): #calculate the score of a word
@@ -83,7 +87,7 @@ def score(_input): #calculate the score of a word
 
 
 def maxScore():
-    _solutions = solve(False)
+    _solutions = solve()
     totalScore = 0
     for i in range(len(_solutions)):
         totalScore += score(_solutions[i])
@@ -213,7 +217,7 @@ currentScore = 0
 for i in foundWords: #calculate the score at the start of the game
     currentScore += score(i)
 
-solutions = solve(False) #fill the solutions list with all of the possible solution words
+solutions = solve() #fill the solutions list with all of the possible solution words
 
 letterFile.close()
 letterFile = open("letters.txt", 'a') #reopen the file so the score and words can be appended to it
@@ -284,6 +288,11 @@ while True:
         lettersGUIPad.addstr(0, 0, printLettersGUI(letters)) #regenerate the letters GUI with shuffled letters
         lettersGUIPad.refresh(0, 0, 2, 2, 17, 30)
         continue
+    if input == "/hint":
+        input = hint() #set the input to a good word, run it through the rest of the input code as a regular input
+    if input == "/solve":
+        temp = solve() #temp = a list of all of the not-already-found solution words
+
 
     for i in solutions:
         if i == input: #if the input matches a word in the solutions list, return true
@@ -317,6 +326,7 @@ while True:
 #====================================================================================================================================================================================#
 
 #curses ending stuff
+letterFile.close()
 curses.nocbreak()
 stdscr.keypad(False)
 curses.echo()
