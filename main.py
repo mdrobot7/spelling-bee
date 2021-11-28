@@ -322,6 +322,7 @@ while True:
                     counter += 1
                 foundWordsPad.addstr(ii % 15, (counter - 1)*15, foundWords[ii]) #make columns of 15 found words
 
+            letterFile.close()
             letterFile = open("letters.txt", 'a') #reopen the file so the score and words can be appended to it
             letterFile.write("-" + i + "\n")
         foundWordsPad.refresh(0, 0, 6, 35, 21, 120)
