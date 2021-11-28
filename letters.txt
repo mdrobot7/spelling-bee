@@ -65,5 +65,5 @@ wamble
 weal
 whale
 wheal
-wheel
 whelm
+wheel

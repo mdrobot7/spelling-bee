@@ -72,6 +72,9 @@ def hint(): #get one random solution word that ISN'T in the solved words list
     while True:
         try:
             temp = solutions[random.randrange(0, len(solutions))]
+        except ValueError: #solutions has len = 0, so randrange doesn't work correctly...
+            temp = ""
+        try:
             foundWords.index(temp)
         except ValueError: #throws an exception when the value cannot be found in the list by .index(). Means that the dict word is NOT in the found words list
             return temp
@@ -240,7 +243,7 @@ stdscr.keypad(True) #handle special input codes
 #.refresh updates the screen
 #everything is y, x!!!!!
 
-stdscr.addstr(20, 0, "Input: ") #print this BEFORE EVERYTHING ELSE otherwise it breaks stuff
+stdscr.addstr(21, 0, "Input: ") #print this BEFORE EVERYTHING ELSE otherwise it breaks stuff
 stdscr.refresh()
 
 lettersGUIPad = curses.newpad(100, 100) #a part of the screen for the letters GUI
@@ -255,14 +258,14 @@ except:
     print("\nMake your terminal window bigger, and restart the program.\n") #curses freaks out because the terminal window is too small for the desired pad dimension
     raise SystemExit
 
-foundWordsPad = curses.newpad(100, 100)
+foundWordsPad = curses.newpad(30, 150)
 counter = 0
 for i in range(len(foundWords)):
     if i % 15 == 0:
         counter += 1
-    foundWordsPad.addstr(i, (counter - 1)*20, foundWords[i]) #make columns of 15 found words
+    foundWordsPad.addstr(i % 15, (counter - 1)*15, foundWords[i]) #make columns of 15 found words
 try:
-    foundWordsPad.refresh(0, 0, 6, 35, 30, 70)
+    foundWordsPad.refresh(0, 0, 6, 35, 21, 120)
 except:
     print("\nMake your terminal window bigger, and restart the program.\n") #curses freaks out because the terminal window is too small for the desired pad dimension
     raise SystemExit
@@ -278,14 +281,14 @@ currentRankPad.refresh(0, 0, 4, 35, 4, 70)
 ranksPad = curses.newpad(100, 100)
 for i in range(len(ranks)):
     ranksPad.addstr(i, 0, ranks[i] + ": " + str(rankVals[i]))
-ranksPad.refresh(0, 0, 3, 80, 15, 100)
+ranksPad.refresh(0, 0, 3, 130, 15, 150)
 
 while True:
-    input = str(stdscr.getstr(20, 7)) #returns bytes, needs to be converted/casted to string.
+    input = str(stdscr.getstr(21, 7)) #returns bytes, needs to be converted/casted to string.
     input = input[2:-1] #remove extraneous characters
     input = input.lower()
     for i in range(len(input)):
-        stdscr.addstr(20, 7 + i, " ") #clear out the past input (stdscr.clrtoeol() and .clrtobot() didn't work for some reason...)
+        stdscr.addstr(21, 7 + i, " ") #clear out the past input (stdscr.clrtoeol() and .clrtobot() didn't work for some reason...)
     stdscr.refresh()
 
     if input == "/exit": break
@@ -302,17 +305,16 @@ while True:
         for i in temp:
             #don't score, since the user didn't input the words
             #because the score didn't change, the rank doesn't either. don't bother calculating it.
-
             foundWords.append(i)
             counter = 0
             for ii in range(len(foundWords)):
                 if ii % 15 == 0:
                     counter += 1
-                foundWordsPad.addstr(ii, (counter - 1)*20, foundWords[ii]) #make columns of 15 found words
+                foundWordsPad.addstr(ii % 15, (counter - 1)*15, foundWords[ii]) #make columns of 15 found words
 
             letterFile = open("letters.txt", 'a') #reopen the file so the score and words can be appended to it
             letterFile.write(i + "\n")
-        foundWordsPad.refresh(0, 0, 6, 35, 30, 70)
+        foundWordsPad.refresh(0, 0, 6, 35, 21, 120)
         letterFile.close()
         time.sleep(5)
         raise SystemExit #the puzzle is solved, kill the program after 5 sec. the user can restart it if they want to see more.
@@ -327,11 +329,11 @@ while True:
 
                 foundWords.append(input)
                 counter = 0
-                for i in range(len(foundWords)):
-                    if i % 15 == 0:
+                for ii in range(len(foundWords)):
+                    if ii % 15 == 0:
                         counter += 1
-                    foundWordsPad.addstr(i, (counter - 1)*20, foundWords[i]) #make columns of 15 found words
-                foundWordsPad.refresh(0, 0, 6, 35, 30, 70)
+                    foundWordsPad.addstr(ii % 15, (counter - 1)*15, foundWords[ii]) #make columns of 15 found words
+                foundWordsPad.refresh(0, 0, 6, 35, 21, 120)
 
                 currentScorePad.addstr(0, 0, "Current Score: " + str(currentScore))
                 currentScorePad.refresh(0, 0, 3, 35, 3, 70)
