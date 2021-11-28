@@ -188,7 +188,7 @@ letterFile.close()
 today = date.today()
 d1 = today.strftime("%d/%m/%Y") # dd/mm/YY, put into a string
 
-if (int(d1[0:2]) > int(lastDate[0:2])) or (int(d1[3:5]) > int(lastDate[3:5])): #if the dates are greater or the months are greater, regen the letters and redo setup
+if lastDate == "" or (int(d1[0:2]) > int(lastDate[0:2])) or (int(d1[3:5]) > int(lastDate[3:5])): #if the dates are greater or the months are greater, regen the letters and redo setup
     print("Generating letters...")
     letterFile = open("letters.txt", 'w')
 
@@ -210,7 +210,7 @@ if (int(d1[0:2]) > int(lastDate[0:2])) or (int(d1[3:5]) > int(lastDate[3:5])): #
                     if lettersList[ii] == 'u':
                         break
                 else: #if no u's are found, but q's are:
-                    lettersList[random.randrange(0, 8)] = 'u'
+                    lettersList[random.randrange(0, 7)] = 'u'
                 break #get out of the q-checking for loop
 
         for i in range(3): #randomize the letters 3 times, check each combo each time. this might save some processing time.
