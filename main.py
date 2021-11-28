@@ -21,6 +21,7 @@ vowels = "aeiou"
 ranks = ["Beginner", "Good Start", "Moving Up", "Good", "Solid", "Nice", "Great", "Amazing", "Genius", "Queen Bee"]
 solutions = []
 foundWords = []
+hintFlag = False #true means the last inputted word was a /hint and not a solved word
 
 try:
     dictFile = open("dictionary.txt", 'r')
@@ -203,10 +204,12 @@ if (int(d1[0:2]) > int(lastDate[0:2])) or (int(d1[3:5]) > int(lastDate[3:5])): #
     letterFile.write("\n" + calculateRanks() + "\n")
     letterFile.close()
 
+#====================================================================================================================================================================================#
+
 letterFile = open("letters.txt", 'r')
 letterFileList = letterFile.readlines()
 
-letters = letterFileList[1]
+letters = letterFileList[1] #second line
 letters = letters.replace(" ", "") #get rid of the spaces
 letters = letters.strip()
 letters = letters.lower()
@@ -217,13 +220,19 @@ for i in range(len(rankVals)):
 
 foundWords = letterFileList
 for i in range(3):
-    foundWords.pop(0) #get rid of the first 4 lines of the list/letters.txt (date, letters, max score, ranks) to get a list of found words
+    foundWords.pop(0) #get rid of the first 4 lines of the list/letters.txt (date, letters, ranks) to get a list of found words
 for i in range(len(foundWords)):
     foundWords[i] = foundWords[i].strip() #get rid of the newline chars
 
 currentScore = 0
 for i in foundWords: #calculate the score at the start of the game
+    if i[0] == '-': #if the found word starts with a dash, that means it was a /hinted or /solved word, so don't count it in the score
+        continue
     currentScore += score(i)
+
+for i in range(len(foundWords)):
+    if foundWords[i][0] == '-':
+        foundWords[i] = foundWords[i][1:] #if the found word starts with a dash, remove it in the list ONLY, not in the file
 
 solutions = solve() #fill the solutions list with all of the possible solution words
 
@@ -284,6 +293,7 @@ for i in range(len(ranks)):
 ranksPad.refresh(0, 0, 3, 130, 15, 150)
 
 while True:
+    hintFlag = False
     input = str(stdscr.getstr(21, 7)) #returns bytes, needs to be converted/casted to string.
     input = input[2:-1] #remove extraneous characters
     input = input.lower()
@@ -298,7 +308,7 @@ while True:
         continue
     if input == "/hint":
         input = hint() #set the input to a good word, run it through the rest of the input code as a regular input
-        currentScore -= score(input) #subtract the score of the hint, it will be added back later. (net effect: no score change because the word was hinted)
+        hintFlag = True
         #the rest of the input code still needs to be run because of the GUI stuff
     if input == "/solve":
         temp = solve() #temp = a list of all of the not-already-found solution words
@@ -313,7 +323,7 @@ while True:
                 foundWordsPad.addstr(ii % 15, (counter - 1)*15, foundWords[ii]) #make columns of 15 found words
 
             letterFile = open("letters.txt", 'a') #reopen the file so the score and words can be appended to it
-            letterFile.write(i + "\n")
+            letterFile.write("-" + i + "\n")
         foundWordsPad.refresh(0, 0, 6, 35, 21, 120)
         letterFile.close()
         time.sleep(5)
@@ -325,7 +335,8 @@ while True:
             for ii in foundWords:
                 if ii == input: break #if the input matches a solution, make sure it hasn't already been found
             else: #if it wasn't already found (aka is a good input word)
-                currentScore += score(input)
+                if not hintFlag: #if the last word was a real input (not a hint), add to the score
+                    currentScore += score(input)
 
                 foundWords.append(input)
                 counter = 0
@@ -346,7 +357,11 @@ while True:
 
                 letterFile.close()
                 letterFile = open("letters.txt", 'a') #reopen the file so the score and words can be appended to it
-                letterFile.write(input + "\n")
+                if not hintFlag:
+                    letterFile.write(input + "\n")
+                else:
+                    letterFile.write("-" + input + "\n") #if the last input was a /hint, add a dash in front of the word in the file to denote it
+
 
 #====================================================================================================================================================================================#
 
