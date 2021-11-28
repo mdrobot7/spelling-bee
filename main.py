@@ -70,15 +70,21 @@ def solve(): #returns a list of all solution words
 
 
 def hint(): #get one random solution word that ISN'T in the solved words list
-    while True:
+    #foundWords is the LIST of found found words
+    #solutions is the LIST of solution words that HAVEN'T been found yet AS OF THE BEGINNING OF THE PLAY SESSION!
+    _solutions = solutions #local instance of solutions LIST
+    for i in range(len(solutions)):
         try:
-            temp = solutions[random.randrange(0, len(solutions))]
-        except ValueError: #solutions has len = 0, so randrange doesn't work correctly...
-            temp = ""
+            _index = random.randrange(0, len(_solutions))
+        except ValueError: #if len(_solutions) = 0
+            _index = 0
+
         try:
-            foundWords.index(temp)
+            foundWords.index(_solutions[_index])
         except ValueError: #throws an exception when the value cannot be found in the list by .index(). Means that the dict word is NOT in the found words list
-            return temp
+            return _solutions[_index]
+        else: #if the solution HAS been found (no exception thrown), get rid of that solution word
+            _solutions.pop(_index)
 
 
 def score(_input): #calculate the score of a word
@@ -362,6 +368,7 @@ while True:
                     letterFile.write(input + "\n")
                 else:
                     letterFile.write("-" + input + "\n") #if the last input was a /hint, add a dash in front of the word in the file to denote it
+                letterFile.close()
 
 
 #====================================================================================================================================================================================#

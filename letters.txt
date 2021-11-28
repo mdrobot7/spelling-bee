@@ -2,9 +2,10 @@
 L w b a h m e
 0,5,11,22,45,67,90,135,180,226
 babble
--blame
--whale
--wall
+wheel
+bale
+-llama
+-meal
 -abele
 -able
 -alae
@@ -14,7 +15,6 @@ babble
 -allheal
 -amble
 -babel
--bale
 -ball
 -balm
 -bawl
@@ -23,6 +23,7 @@ babble
 -blab
 -blah
 -blamable
+-blame
 -bleb
 -blew
 -embalm
@@ -50,20 +51,19 @@ babble
 -leal
 -lemma
 -lemme
--llama
 -male
 -mall
 -malleable
 -mallee
 -malm
 -mammal
--meal
 -mewl
 -wale
+-wall
 -wallah
 -wamble
 -weal
 -well
+-whale
 -wheal
--wheel
 -whelm
