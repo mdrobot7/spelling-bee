@@ -11,7 +11,6 @@ import string
 import os
 import curses
 from datetime import date
-import solvers
 
 allowProfane = False
 #clearConsole = lambda: os.system("cls") #for clearing the terminal screen
@@ -25,7 +24,7 @@ hintFlag = False #true means the last inputted word was a /hint and not a solved
 
 try:
     dictFile = open("dictionary.txt", 'r')
-    if allowProfane: #if profane is in the args
+    if allowProfane: #if profane is allowed
         dictFile = open("dictionary-profane.txt", 'r') #combine the dict and prof files into one large file
 except FileNotFoundError:
     print("Dictionary files not found!")
@@ -37,9 +36,9 @@ except FileNotFoundError:
 #dictFile is the file object
 #letters is the game letter string (first char is the center letter, NO SPACES!)
 
-def solve(): #returns a list of all solution words
+def solve(): #returns a list of all solution words (requires letters (str), foundWords (LIST)) ------ returns LIST
     dictFile = open("dictionary.txt", 'r')
-    if allowProfane: #if profane is in the args
+    if allowProfane: #if profane is allowed
         dictFile = open("dictionary-profane.txt", 'r') #combine the dict and prof files into one large file
     dict = dictFile.readlines() #read all lines into a list
     count = 0
@@ -69,9 +68,7 @@ def solve(): #returns a list of all solution words
     return dict
 
 
-def hint(): #get one random solution word that ISN'T in the solved words list
-    #foundWords is the LIST of found found words
-    #solutions is the LIST of solution words that HAVEN'T been found yet AS OF THE BEGINNING OF THE PLAY SESSION!
+def hint(): #get one random solution word that ISN'T in the solved words list (requires FULL solutions list, foundWords (LIST)) ---- returns str
     _solutions = solutions #local instance of solutions LIST
     for i in range(len(solutions)):
         try:
@@ -155,6 +152,31 @@ def printLettersGUI(_letters): #returns the ascii art for the letters (like in s
       \\---/(.. {} ..)\\---/
             \\...../
              \\---/""".format(_lettersList[0], _lettersList[1], _lettersList[2], center, _lettersList[3], _lettersList[4], _lettersList[5])
+
+#====================================================================================================================================================================================#
+
+#NYT SPELLING BEE SOLVER (SEPARATE FROM THE GAME CODE)
+
+if len(sys.argv) != 1: #if there are arguments
+    if len(sys.argv) != 3: #if there are multiple arguments, but not exactly 3 (main.py, -h/-s, [letters]), raise exception
+        raise "Too many/too few arguments, see README for help!"
+
+    if sys.argv[1] == "-h": #if the first arg after main.py is -h (hint)
+        letters = sys.argv[2]
+        letters = letters.lower()
+        foundWords = []
+        solutions = solve()
+        print(hint())
+    elif sys.argv[1] == "-s": #if the first arg after main.py is -s (solve)
+        letters = sys.argv[2]
+        letters = letters.lower()
+        foundWords = []
+        solutions = solve()
+        for i in solutions:
+            print(i) #to put a newline after every word
+    else:
+        raise "Unsupported arguments. See README for help!"
+    raise SystemExit
 
 #====================================================================================================================================================================================#
 
