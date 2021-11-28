@@ -20,6 +20,7 @@ allowProfane = False
 vowels = "aeiou"
 ranks = ["Beginner", "Good Start", "Moving Up", "Good", "Solid", "Nice", "Great", "Amazing", "Genius", "Queen Bee"]
 solutions = []
+foundWords = []
 
 try:
     dictFile = open("dictionary.txt", 'r')
@@ -54,8 +55,8 @@ def solve(): #returns a list of all solution words
             continue
 
         try: #check if the current word is in the solved list
-            foundWords.index(solutions[random.randint(0, len(solutions))])
-        except ValueError: #throws an exception when the value cannot be found in the list by .index(). Means that the dict word is NOT in the found list (SUCCESS)
+            foundWords.index(dict[count])
+        except ValueError: #throws an exception when dict[count] cannot be found in the list by .index(). Means that the dict word is NOT in the found list (SUCCESS)
             for i in range(len(dict[count])): #range(length of the current count'th line of the dictionary)
                 if letters.find(dict[count][i]) == -1: #if the i'th letter of the current line isn't in the word, delete the line from the dict and break the loop
                     dict.pop(count)
@@ -70,7 +71,8 @@ def solve(): #returns a list of all solution words
 def hint(): #get one random solution word that ISN'T in the solved words list
     while True:
         try:
-            foundWords.index(solutions[random.randint(0, len(solutions))])
+            temp = solutions[random.randrange(0, len(solutions))]
+            foundWords.index(temp)
         except ValueError: #throws an exception when the value cannot be found in the list by .index(). Means that the dict word is NOT in the found words list
             return temp
 
@@ -109,7 +111,10 @@ def calculateRanks(): #the scores corresponding to each of the ranks in spelling
 def currentRank(_score, _rankValsList): #returns a value 0-9, corresponding to an index in the ranks list
     for i in range(len(_rankValsList)):
         if _score < _rankValsList[i]: #run the for loop until it reaches a rank that is greater than the current score
-            return i - 1
+            if i == 0:
+                return 0 #in the case of a negative score, aka if the first word is hinted
+            else:
+                return i - 1
     return 0
 
 
@@ -173,7 +178,7 @@ if (int(d1[0:2]) > int(lastDate[0:2])) or (int(d1[3:5]) > int(lastDate[3:5])): #
                     if lettersList[ii] == 'u':
                         break
                 else: #if no u's are found, but q's are:
-                    lettersList[random.randint(0, 8)] = 'u'
+                    lettersList[random.randrange(0, 8)] = 'u'
                 break #get out of the q-checking for loop
 
         for i in range(3): #randomize the letters 3 times, check each combo each time. this might save some processing time.
@@ -290,8 +295,27 @@ while True:
         continue
     if input == "/hint":
         input = hint() #set the input to a good word, run it through the rest of the input code as a regular input
+        currentScore -= score(input) #subtract the score of the hint, it will be added back later. (net effect: no score change because the word was hinted)
+        #the rest of the input code still needs to be run because of the GUI stuff
     if input == "/solve":
         temp = solve() #temp = a list of all of the not-already-found solution words
+        for i in temp:
+            #don't score, since the user didn't input the words
+            #because the score didn't change, the rank doesn't either. don't bother calculating it.
+
+            foundWords.append(i)
+            counter = 0
+            for ii in range(len(foundWords)):
+                if ii % 15 == 0:
+                    counter += 1
+                foundWordsPad.addstr(ii, (counter - 1)*20, foundWords[ii]) #make columns of 15 found words
+
+            letterFile = open("letters.txt", 'a') #reopen the file so the score and words can be appended to it
+            letterFile.write(i + "\n")
+        foundWordsPad.refresh(0, 0, 6, 35, 30, 70)
+        letterFile.close()
+        time.sleep(5)
+        raise SystemExit #the puzzle is solved, kill the program after 5 sec. the user can restart it if they want to see more.
 
 
     for i in solutions:
@@ -313,8 +337,7 @@ while True:
                 currentScorePad.refresh(0, 0, 3, 35, 3, 70)
 
                 currentRankPad.addstr(0, 0, "Current Rank: ")
-                for i in range(len(ranks[currentRank(currentScore - score(input), rankVals)])): #clear out the old rank from the line (.clrtoeol doesn't work for some reason)
-                    currentRankPad.addstr(" ")
+                currentRankPad.addstr(" " * 10) #remove the old rank (.clrtoeol and .clrtobot didn't work for some reason)
                 currentRankPad.refresh(0, 0, 4, 35, 4, 70)
                 currentRankPad.addstr(0, 0, "Current Rank: " + ranks[currentRank(currentScore, rankVals)]) #put the new rank in
                 currentRankPad.refresh(0, 0, 4, 35, 4, 70)
