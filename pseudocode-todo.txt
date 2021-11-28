@@ -1,9 +1,6 @@
 TODO:
 -/solve [arg] or py main.py -s [arg]  (or -h for hint) for solving the official NYT one instead of playing the game
 
-redo hint() function. when all of the words are found (using /solve, /hint, or by typing), and then /hint is entered, it locks
-the code in the while(True) loop while it tries to find a hint in an empty solutions list
-
 ----------------------------------------------------------------------------------------------------
 Pseudocode for main.py:
 
