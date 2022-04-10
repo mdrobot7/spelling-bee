@@ -173,6 +173,13 @@ def lenSort(e):
 if len(sys.argv) != 1: #if there are other arguments
     exitFlag = False
     if len(sys.argv[1]) > 2:
+        letterFile = open("letters.txt", 'r')
+        letterFile.readline()
+        print("Your current game is using the letters: " + letterFile.readline(), end = "")
+        print("If you would like to continue using these letters, type [N] and restart the game as normal.")
+        _i = input("Setting the letters for Spelling Bee will clear your current game's words and score. Are you sure? [Y/N] ")
+        if  _i != "Y" and _i != "y": raise SystemExit
+
         today = date.today()
         d1 = today.strftime("%d/%m/%Y") # dd/mm/YY, put into a string
         
