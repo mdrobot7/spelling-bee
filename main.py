@@ -153,12 +153,24 @@ def printLettersGUI(_letters): #returns the ascii art for the letters (like in s
             \\...../
              \\---/""".format(_lettersList[0], _lettersList[1], _lettersList[2], center, _lettersList[3], _lettersList[4], _lettersList[5])
 
+def findPangrams(dict, lets):
+    pangrams = []
+    for i in dict:
+        for ii in lets:
+            if i.find(ii) == -1: break #if there is a letter IN lets that is NOT in the dict word, it is not a pangram
+        else:
+            pangrams.append(i)
+    return pangrams #returns pangrams, sorted alphabetically
+
+def lenSort(e):
+  return len(e)
+
 #====================================================================================================================================================================================#
 
 #NYT SPELLING BEE SOLVER (SEPARATE FROM THE GAME CODE)
 
 if len(sys.argv) != 1: #if there are arguments
-    if len(sys.argv) != 3: #if there are multiple arguments, but not exactly 3 (main.py, -h/-s, [letters]), raise exception
+    if len(sys.argv) != 3: #if there are multiple arguments, but not exactly 3 (main.py, -h/-s/-S, [letters]), raise exception
         raise "Too many/too few arguments, see README for help!"
 
     if sys.argv[1] == "-h": #if the first arg after main.py is -h (hint)
@@ -172,10 +184,26 @@ if len(sys.argv) != 1: #if there are arguments
         letters = letters.lower()
         foundWords = []
         solutions = solve()
-        for i in solutions:
-            print(i) #to put a newline after every word
+        pangrams = findPangrams(solutions, letters)
+        for i in pangrams:
+            solutions[solutions.index(i)] = "*" + solutions[solutions.index(i)] #add an asterisk in front of pangrams
+        for i in solutions: print(i) #to put a newline after every word
+    elif sys.argv[1] == "-S": #if the first arg after main.py is -S (solve, sorted with pangrams first)
+        letters = sys.argv[2]
+        letters = letters.lower()
+        foundWords = []
+        solutions = solve()
+
+        pangrams = findPangrams(solutions, letters)
+        for i in pangrams:
+            solutions.remove(i)
+        solutions.sort(reverse = True, key=lenSort) #sort solutions by length (aka point value, ish)
+
+        for i in pangrams: print("*" + i) #print out pangrams with asterisk in front, and solutions
+        for i in solutions: print(i)
     else:
         raise "Unsupported arguments. See README for help!"
+    print("") #add newline for looks
     raise SystemExit
 
 #====================================================================================================================================================================================#
