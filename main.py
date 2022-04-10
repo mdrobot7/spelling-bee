@@ -4,6 +4,7 @@
 
 #curses guide: https://docs.python.org/3/howto/curses.html#the-python-curses-module
 
+from ast import Return
 import time
 import sys
 import random
@@ -169,11 +170,28 @@ def lenSort(e):
 
 #NYT SPELLING BEE SOLVER (SEPARATE FROM THE GAME CODE)
 
-if len(sys.argv) != 1: #if there are arguments
-    if len(sys.argv) != 3: #if there are multiple arguments, but not exactly 3 (main.py, -h/-s/-S, [letters]), raise exception
+if len(sys.argv) != 1: #if there are other arguments
+    exitFlag = False
+    if len(sys.argv[1]) > 2:
+        today = date.today()
+        d1 = today.strftime("%d/%m/%Y") # dd/mm/YY, put into a string
+        
+        letters = sys.argv[1] #grab letters from arg
+        letters = letters.capitalize() #make the first letter uppercase
+        
+        letterFile = open("letters.txt", 'w')
+        letterFile.write(d1 + "\n") #write the date to the file
+        for i in range(len(letters)):
+            letterFile.write(letters[i] + " ")
+        letters = letters.lower() #re-lowercase all of the letters
+
+        letterFile.write("\n" + calculateRanks() + "\n")
+        letterFile.close()
+        exitFlag = True
+    elif len(sys.argv) != 3: #if there are multiple arguments, but not exactly 3 (main.py, -h/-s/-S, [letters]), raise exception
         raise "Too many/too few arguments, see README for help!"
 
-    if sys.argv[1] == "-h": #if the first arg after main.py is -h (hint)
+    elif sys.argv[1] == "-h": #if the first arg after main.py is -h (hint)
         letters = sys.argv[2]
         letters = letters.lower()
         foundWords = []
@@ -204,7 +222,7 @@ if len(sys.argv) != 1: #if there are arguments
     else:
         raise "Unsupported arguments. See README for help!"
     print("") #add newline for looks
-    raise SystemExit
+    if not exitFlag: raise SystemExit
 
 #====================================================================================================================================================================================#
 
